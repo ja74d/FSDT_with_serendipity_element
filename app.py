@@ -4,12 +4,15 @@ import sympy as sp
 from tqdm import tqdm
 from sympy import Matrix
 from input import *
-from mesh import coordinations
+from mesh import coordinations, Lx
 from code_table import code
 from gaussian_quad import RIP_Gauss
 #from scipy.linalg import lu_factor, lu_solve
 from scipy.sparse import csc_matrix
 from scipy.sparse.linalg import spsolve
+from scipy.linalg import eig
+#from isotropic_A_B_D_S import A, D, S, db
+from Single_FGM import A, D, S, db
 
 # Start the timer
 start = time.perf_counter()
@@ -18,6 +21,11 @@ start = time.perf_counter()
 k, e = sp.symbols('k e')
 #k for kesi
 #e for eta
+
+Sigma = np.array([
+    [1, 0],
+    [0, 0]
+])
 
 #Lagrangian Interpolation Functions
 N1 = (1/4)*(1-k)*(1+e)*(-k+e-1)
@@ -32,7 +40,7 @@ N6 = (1/2)*(1+k)*(1-e**2)
 N8 = (1/2)*(1-k)*(1-e**2)
 
 N = np.array([N1, N2, N3, N4, N5, N6, N7, N8])
-Nw = np.array([N[0], 0, 0, N[1], 0, 0, N[2], 0, 0, N[3], 0, 0, N[4], 0, 0, N[5], 0, 0, N[6], 0, 0, N[7], 0, 0])
+Nw = np.array([N[0], 0, 0, 0, 0, N[1], 0, 0, 0, 0, N[2], 0, 0, 0, 0, N[3], 0, 0,0 , 0, N[4], 0, 0, 0 ,0 , N[5], 0, 0, 0, 0, N[6], 0, 0,0 , 0, N[7], 0, 0, 0, 0])
 
 def DNx(N):
     return (J_inv[0,0])*( sp.diff(N, k) ) + (J_inv[0,1])*( sp.diff(N, e) )
@@ -43,24 +51,9 @@ def DNy(N):
 def matrix_in_list(matrix_to_check, matrix_list):
     matrix_to_check = (matrix_to_check) 
 
-#D
-#Db matrix(Bending)
-db = (E*h**3)/(12*(1-(nu**2)))
-Db = db*np.array([
-    [1, nu, 0],
-    [nu, 1, 0],
-    [0, 0, (1-nu)/2]
-])
-
-#Ds matrix(shearing)
-ds = (E*h*(ka))/(2*(1+nu))
-Ds = ds*np.array([
-    [1, 0],
-    [0, 1]
-])
-
 Jacob = []
 Ke = []
+Kge = []
 Fe = []
 count = 0
 
@@ -114,7 +107,9 @@ for elemc in tqdm(range(len(coordinations)),desc="Calculating elements"):
         
         if (np.linalg.norm(ij_check) - np.linalg.norm(J_check)) < tol:
             K_e = Ke[Jacob.index(ij)]
+            #K_eg = Kge[Jacob.index(ij)]
             Ke.append(K_e)
+            #Kge.append(K_eg)
             break
     else:
         Jacob.append(J)
@@ -129,77 +124,106 @@ for elemc in tqdm(range(len(coordinations)),desc="Calculating elements"):
 
         #B
         #Bb matrix(Bending)
+        Bm = []
+        for i in range(8):
+            BM = np.array([
+                [0, 0, 0, DNx(N[i]), 0],
+                [0, 0, 0, 0, DNy(N[i])],
+                [0, 0, 0, DNy(N[i]), DNx(N[i])]
+            ])
+            Bm.append(BM)
+
+        #Bb matrix(Bending)
         Bb = []
         for i in range(8):
-
             BB = np.array([
-
-            [0, 0, DNx(N[i])],
-            [0, -DNy(N[i]), 0],
-            [0, -DNx(N[i]), DNy(N[i])]
-
+            [0, DNx(N[i]), 0, 0, 0],
+            [0, 0, DNy(N[i]), 0, 0],
+            [0,  DNy(N[i]), DNx(N[i]), 0, 0]
             ])
             Bb.append(BB)
-        Bb = np.array(Bb)
-
 
         #Bs matrix(Shearing)
         Bs = []
         for i in range(8):
             BS = np.array([
-
-            [DNx(N[i]), 0, N[i]],
-            [DNy(N[i]), -N[i], 0],
-
+            [DNx(N[i]), N[i], 0, 0, 0],
+            [DNy(N[i]), 0, N[i], 0, 0],
             ])
             Bs.append(BS)
-        Bs = np.array(Bs)
 
 
+        Bgb = []
+        for i in range(8):
+            BGB = np.array([
+                [DNx(N[i]), 0, 0],
+                [DNy(N[i]), 0, 0]
+            ])
+            Bgb.append(BGB)
+
+        Bgs1 = []
+        for i in range(8):
+            BGS1 = np.array([
+                [0, 0, DNx(N[i])],
+                [0, 0, DNy(N[i])]
+            ])
+            Bgs1.append(BGS1)
+
+        Bgs2 = []
+        for i in range(8):
+            BGS2 = np.array([
+                [0, DNx(N[i]), 0],
+                [0, DNy(N[i]), 0]
+            ])
+            Bgs2.append(BGS2)
+
+        def calculate_kg(i, j):
+            return h*( Bgb[i].T @ Sigma @ Bgb[j] ) + ((h**3)/12)*(Bgs1[i].T @ Sigma @ Bgs1[j])  + (((h**3)/12)*(Bgs2[i].T @ Sigma @ Bgs2[j]))
+        #Pg = np.block([[calculate_kg(i, j) for j in range(8)] for i in range(8)])
+
+        k_eg = np.zeros((24, 24))
+        #for o in range(0, 24):
+        #    for p in range(0, 24):
+        #        k_eg[o, p] = RIP_Gauss(Pg[o, p]*det_J)
+        #Kge.append(k_eg)
 
         #Gaussian Integration Method *
         #Ke
 
+        def compute_km(i, j):
+            return Bm[i].T @ A @ Bm[j]
+        Gm = np.block([[compute_km(i, j) for j in range(8)] for i in range(8)])
+
+        K_em = np.zeros((40, 40))
+        for o in range(0, 40):
+            for p in range(0, 40):
+                K_em[o, p] = RIP_Gauss(Gm[o, p]*det_J)
+
+        #K_eb
         def compute_kb(i, j):
-            return Bb[i].T @ Db @ Bb[j]
-
-
+            return Bb[i].T @ D @ Bb[j]
         Gb = np.block([[compute_kb(i, j) for j in range(8)] for i in range(8)])
 
-
-        K_eb = np.zeros((12, 12))
-        for o in range(0, 12):
-            for p in range(0, 12):
+        K_eb = np.zeros((40, 40))
+        for o in range(0, 40):
+            for p in range(0, 40):
                K_eb[o, p] = RIP_Gauss(Gb[o, p]*det_J)
-
 
         def calculate_ks(i, j):
-            return Bs[i].T @ Ds @ Bs[j]
-
-
+            return Bs[i].T @ S @ Bs[j]
         Gs = np.block([[calculate_ks(i, j) for j in range(8)] for i in range(8)])
 
-
-        K_eb = np.zeros((24, 24))
-        for o in range(0, 24):
-            for p in range(0, 24):
-               #K_eb[o, p] = sp.integrate(sp.integrate((Gb[o, p]*det_J), (k, -1, 1)), (e, -1, 1))
-               K_eb[o, p] = RIP_Gauss(Gb[o, p]*det_J)
-
-
-        Gs = np.array(Gs)
-        K_es = np.zeros((24, 24))
-        for o in range(0, 24):
-            for p in range(0, 24):
+        K_es = np.zeros((40, 40))
+        for o in range(0, 40):
+            for p in range(0, 40):
                 #K_es[o, p] = sp.integrate(sp.integrate((Gs[o, p]*det_J), (k, -1, 1)), (e, -1, 1))
                 K_es[o, p] = RIP_Gauss(Gs[o, p]*det_J)
-
-        K_e = K_es + K_eb
+        K_e = K_es + K_eb + K_em
         Ke.append(K_e)
 
         #Fe
-    F_e = np.zeros((24, 1))
-    for i in range(0,24):
+    F_e = np.zeros((40, 1))
+    for i in range(0,40):
         #F_e[i,0] = sp.integrate(sp.integrate( (p0*Nw[i]*det_J), (k,-1,1) ),(e,-1,1))
         F_e[i, 0] = RIP_Gauss(p0*Nw[i]*det_J)
     Fe.append(F_e)
@@ -215,16 +239,18 @@ for elemc in tqdm(range(len(coordinations)),desc="Calculating elements"):
 num_dofs = np.max(code)
 
 K = np.zeros((num_dofs, num_dofs))
+Kg = np.zeros((num_dofs, num_dofs))
 F = np.zeros(num_dofs)
 
 num_elements = code.shape[0]
 
 for elem in range(num_elements):
-    for i in range(24):
+    for i in range(40):
         if code[elem, i] != 0:
-            for j in range(24):
+            for j in range(40):
                 if code[elem, j] != 0:
                     K[code[elem, i] - 1, code[elem, j] - 1] += Ke[elem][i, j]
+                    #Kg[code[elem, i] - 1, code[elem, j] - 1] += Kge[elem][i, j]
             F[code[elem, i] - 1] += Fe[elem][i, 0]
 
 K_sparse = csc_matrix(K)
@@ -233,6 +259,7 @@ Delta = spsolve(K_sparse, F)
 #Delta = lu_solve((lu, piv), F)
 #Delta = np.linalg.inv(K) @ F
 #Delta = K**-1 @ F
+#eigenvalues, eigenvectors = eig(K, Kg)
 
 Wmid = max(Delta)
 wmidND = (Wmid / (p0 * (Lx)**4 / db))
@@ -241,6 +268,7 @@ wmidND = (Wmid / (p0 * (Lx)**4 / db))
 print(f"number of elements: {num_elements}")
 print(f"displacement at midpoint: {Wmid}")
 print(f"Non-dimensional displacement at midpoint: {wmidND}")  
+#print(f"Buckling load: {min(eigenvalues)}")
 
 # End the timer
 end = time.perf_counter()
