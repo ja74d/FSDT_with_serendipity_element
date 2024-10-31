@@ -2,16 +2,8 @@ import math
 from sympy import Matrix
 import numpy as np
 import scipy as sp
-from input import h
+from input import h, n, ka, Ec, Em, nu
 from sympy import symbols, integrate
-
-#volume fraction index "n"
-n = 0
-
-#Ceramic-Aluminum
-Ec = 200e+09
-Em = 70e+09
-nu = 0.3
 
 Gc = Ec/(2*(1+nu))
 Gm = Em/(2*(1+nu))
@@ -19,11 +11,12 @@ Gm = Em/(2*(1+nu))
 z = symbols('z')
 
 def powerlaw(n, pc, pm):
-    return (pc-pm)*(((2*z+h)/(2*h))**n) + pm
+    return (pc-pm)*((z/h + 0.5)**n) + pm
 
 E_z = powerlaw(n, Ec, Em)
-#e = integrate(E_z*z, (z, -h/2, h/2))/integrate(E_z, (z, -h/2, h/2))
-e = 0
+
+e = integrate((E_z*z), (z, -h/2, h/2))/integrate(E_z, (z, -h/2, h/2))
+
 
 Q = Matrix([
     [0, 0, 0],
@@ -55,7 +48,7 @@ for ii in range(3):
 
 for iii in range(2):
     for jjj in range(2):
-        S[iii,jjj] = 5/6 * integrate(Qs[iii,jjj], (z, -h/2, h/2))
+        S[iii,jjj] = ka * integrate(Qs[iii,jjj], (z, -h/2, h/2))
 
 db = (Em*h**3)/(12*(1-(nu**2)))
 #E = integrate(E_z, (z, -h/2, h/2))/h

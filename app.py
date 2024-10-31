@@ -267,7 +267,7 @@ wmidND = (Wmid / (p0 * (Lx)**4 / db))
 # Output the result
 print(f"number of elements: {num_elements}")
 print(f"displacement at midpoint: {Wmid}")
-print(f"Non-dimensional displacement at midpoint: {wmidND}")  
+print(f"Non-dimensional displacement at midpoint: {100*wmidND}")  
 #print(f"Buckling load: {min(eigenvalues)}")
 
 # End the timer
