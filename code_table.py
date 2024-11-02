@@ -29,11 +29,8 @@ if BCleft == 'S':
     for i in left_dofs:
         resL.append(i[0])
         resL.append(i[2])
-<<<<<<< HEAD
         resL.append(i[3])
         resL.append(i[4])
-=======
->>>>>>> 869aa3cc66a713b9baae50c1acfa04331fe3c93f
 elif BCleft == 'C':
     for i in left_dofs:
         resL.append(i[0])
@@ -49,10 +46,7 @@ if BCright == 'S':
     for i in right_dofs:
         resR.append(i[0])
         resR.append(i[2])
-<<<<<<< HEAD
         resR.append(i[3])
-=======
->>>>>>> 869aa3cc66a713b9baae50c1acfa04331fe3c93f
 elif BCright == 'C':
     for i in right_dofs:
         resR.append(i[0])
@@ -68,10 +62,7 @@ if BCtop == 'S':
     for i in top_dofs:
         resT.append(i[0])
         resT.append(i[1])
-<<<<<<< HEAD
         resT.append(i[4])
-=======
->>>>>>> 869aa3cc66a713b9baae50c1acfa04331fe3c93f
 elif BCtop == 'C':
     for i in top_dofs:
         resT.append(i[0])
@@ -87,10 +78,7 @@ if BCbottom == 'S':
     for i in bottom_dofs:
         resB.append(i[0])
         resB.append(i[1])
-<<<<<<< HEAD
         resB.append(i[4])
-=======
->>>>>>> 869aa3cc66a713b9baae50c1acfa04331fe3c93f
 elif BCbottom == 'C':
     for i in bottom_dofs:
         resB.append(i[0])
