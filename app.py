@@ -11,9 +11,8 @@ from gaussian_quad import RIP_Gauss
 from scipy.sparse import csc_matrix
 from scipy.sparse.linalg import spsolve
 from scipy.linalg import eig
-from isotropic_A_B_D_S import A, D, S, db, Db, Ds
-#from Single_FGM import A, D, S, db
-from isotropic_A_B_D_S import A, B, D, S, Db, Ds, db, ds
+#from isotropic_A_B_D_S import A, D, S, db, Db, Ds
+from Single_FGM import A, D, S, db
 
 # Start the timer
 start = time.perf_counter()
@@ -222,7 +221,7 @@ for elemc in tqdm(range(len(coordinations)),desc="Calculating elements"):
             return Bb[i].T @ D @ Bb[j]
 
         Gb = np.block([[compute_kb(i, j) for j in range(8)] for i in range(8)])
-        
+
         K_e = K_es + K_eb + K_em
         Ke.append(K_e)
 

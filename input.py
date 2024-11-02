@@ -6,20 +6,28 @@ n = 0
 
 #Mechanincal Properties
 #Ceramic-Aluminum
-#Ec = 200e+09
-#Em = 70e+09
-#nu = 0.3
+Ec = 200e+09
+Em = 70e+09
 
 E = 1
 h = 1
 nu = 0.3
-ka = 5/6
+K_dictionary = {
+    0: 5/6,
+    1: 0.831,
+    2: 0.7949,
+    4: 0.76,
+    8: 0.7619,
+    10: 0.7694
+}
+
+ka = K_dictionary[n]
 
 #Distributed Load
 p0 = 1
 
 #Geometry
-Lx = 16
+Lx = 5
 
 #tolerance
 tol = 1e-10
