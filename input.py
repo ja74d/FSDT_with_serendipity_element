@@ -6,10 +6,11 @@ n = 0
 
 #Mechanincal Properties
 #Ceramic-Aluminum
-Ec = 200e+09
-Em = 70e+09
-nu = 0.3
+#Ec = 200e+09
+#Em = 70e+09
+#nu = 0.3
 
+E = 1
 h = 1
 nu = 0.3
 ka = 5/6
@@ -18,6 +19,7 @@ ka = 5/6
 p0 = 1
 
 #Geometry
+Lx = 16
 
 #tolerance
 tol = 1e-10

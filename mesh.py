@@ -17,7 +17,6 @@ node_coords = node_coords.reshape((-1, 3))
 
 # rectangular elements are specified by "element_tags[1]"
 # A list that contains lists of nodes for each elemete
-
 node_per_element = node_tages_per_element[2].reshape(-1, 8)
 
 #number of elements
@@ -70,19 +69,16 @@ for i in Boundary['Left']:
 
 right_dofs = []
 for i in Boundary['Right']:
-    #R = [int(3*i-2), int(3*i-1), int(3*i)]
     R = [int(5*i-4), int(5*i-3), int(5*i-2), int(5*i-1), int(5*i)]
     right_dofs.append(R)
 
 top_dofs = []
 for i in Boundary['Top']:
-    #T = [ int(3*i-2), int(3*i-1), int(3*i) ]
     T = [int(5*i-4), int(5*i-3), int(5*i-2), int(5*i-1), int(5*i)]
     top_dofs.append(T)
 
 bottom_dofs = []
 for i in Boundary['Bottom']:
-    #B = [ int(3*i-2), int(3*i-1), int(3*i) ]
     B = [int(5*i-4), int(5*i-3), int(5*i-2), int(5*i-1), int(5*i)]
     bottom_dofs.append(B)
 
@@ -102,8 +98,5 @@ for i in node_per_element:
 
 coordinations = [coordinations[i:i+8] for i in range(0, len(coordinations), 8)]
 #print(coordinations)
-size = abs(coordinations[0][0][0] - coordinations[0][1][0])
-#print(coordinations)
-Lx = (Nel**0.5)*size
 
 gmsh.finalize()

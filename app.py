@@ -4,15 +4,15 @@ import sympy as sp
 from tqdm import tqdm
 from sympy import Matrix
 from input import *
-from mesh import coordinations, Lx
+from mesh import coordinations
 from code_table import code
 from gaussian_quad import RIP_Gauss
 #from scipy.linalg import lu_factor, lu_solve
 from scipy.sparse import csc_matrix
 from scipy.sparse.linalg import spsolve
 from scipy.linalg import eig
-#from isotropic_A_B_D_S import A, D, S, db
-from Single_FGM import A, D, S, db
+from isotropic_A_B_D_S import A, D, S, db, Db, Ds
+#from Single_FGM import A, D, S, db
 
 # Start the timer
 start = time.perf_counter()
@@ -22,8 +22,10 @@ k, e = sp.symbols('k e')
 #k for kesi
 #e for eta
 
+S1 = ((np.pi**2)*db)/Lx**2
+
 Sigma = np.array([
-    [1, 0],
+    [S1, 0],
     [0, 0]
 ])
 
@@ -148,7 +150,7 @@ for elemc in tqdm(range(len(coordinations)),desc="Calculating elements"):
         for i in range(8):
             BS = np.array([
             [DNx(N[i]), N[i], 0, 0, 0],
-            [DNy(N[i]), 0, N[i], 0, 0],
+            [DNy(N[i]), 0, N[i], 0 , 0],
             ])
             Bs.append(BS)
 
@@ -156,24 +158,24 @@ for elemc in tqdm(range(len(coordinations)),desc="Calculating elements"):
         Bgb = []
         for i in range(8):
             BGB = np.array([
-                [DNx(N[i]), 0, 0],
-                [DNy(N[i]), 0, 0]
+                [DNx(N[i]), 0, 0, 0, 0],
+                [DNy(N[i]), 0, 0, 0, 0]
             ])
             Bgb.append(BGB)
 
         Bgs1 = []
         for i in range(8):
             BGS1 = np.array([
-                [0, 0, DNx(N[i])],
-                [0, 0, DNy(N[i])]
+                [0, 0, DNx(N[i]), 0, 0],
+                [0, 0, DNy(N[i]), 0, 0]
             ])
             Bgs1.append(BGS1)
 
         Bgs2 = []
         for i in range(8):
             BGS2 = np.array([
-                [0, DNx(N[i]), 0],
-                [0, DNy(N[i]), 0]
+                [0, DNx(N[i]), 0, 0, 0],
+                [0, DNy(N[i]), 0, 0, 0]
             ])
             Bgs2.append(BGS2)
 
@@ -181,9 +183,9 @@ for elemc in tqdm(range(len(coordinations)),desc="Calculating elements"):
             return h*( Bgb[i].T @ Sigma @ Bgb[j] ) + ((h**3)/12)*(Bgs1[i].T @ Sigma @ Bgs1[j])  + (((h**3)/12)*(Bgs2[i].T @ Sigma @ Bgs2[j]))
         #Pg = np.block([[calculate_kg(i, j) for j in range(8)] for i in range(8)])
 
-        k_eg = np.zeros((24, 24))
-        #for o in range(0, 24):
-        #    for p in range(0, 24):
+        #k_eg = np.zeros((40, 40))
+        #for o in range(0, 40):
+        #    for p in range(0, 40):
         #        k_eg[o, p] = RIP_Gauss(Pg[o, p]*det_J)
         #Kge.append(k_eg)
 
@@ -259,7 +261,7 @@ Delta = spsolve(K_sparse, F)
 #Delta = lu_solve((lu, piv), F)
 #Delta = np.linalg.inv(K) @ F
 #Delta = K**-1 @ F
-#eigenvalues, eigenvectors = eig(K, Kg)
+
 
 Wmid = max(Delta)
 wmidND = (Wmid / (p0 * (Lx)**4 / db))
@@ -267,8 +269,9 @@ wmidND = (Wmid / (p0 * (Lx)**4 / db))
 # Output the result
 print(f"number of elements: {num_elements}")
 print(f"displacement at midpoint: {Wmid}")
-print(f"Non-dimensional displacement at midpoint: {100*wmidND}")  
-#print(f"Buckling load: {min(eigenvalues)}")
+print(f"Non-dimensional displacement at midpoint: {wmidND}")
+#eigenvalues, eigenvectors = eig(K, Kg)
+#print(f"Buckling load factor: {min(eigenvalues)}")
 
 # End the timer
 end = time.perf_counter()

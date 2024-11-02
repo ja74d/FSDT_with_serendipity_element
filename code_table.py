@@ -27,10 +27,7 @@ for i, element in enumerate(elements):
 resL = []
 if BCleft == 'S':
     for i in left_dofs:
-        #resL.append(i[0])
-        #resL.append(i[1])
         resL.append(i[0])
-        #resL.append(i[1])
         resL.append(i[2])
         resL.append(i[3])
         resL.append(i[4])
@@ -38,61 +35,57 @@ elif BCleft == 'C':
     for i in left_dofs:
         resL.append(i[0])
         resL.append(i[1])
-        resL.append(i[2])  
+        resL.append(i[2])
+        resL.append(i[3])
+        resL.append(i[4])
 elif BCleft == 'F':
     pass
 
 resR = []
 if BCright == 'S':
     for i in right_dofs:
-        #resR.append(i[0])
-        #resR.append(i[1])
         resR.append(i[0])
-        #resR.append(i[1])
         resR.append(i[2])
         resR.append(i[3])
-        #resR.append(i[4])
 elif BCright == 'C':
     for i in right_dofs:
         resR.append(i[0])
         resR.append(i[1])
-        resR.append(i[2])     
+        resR.append(i[2])
+        resR.append(i[3])
+        resR.append(i[4])
 elif BCright == 'F':
     pass
 
 resT = []
 if BCtop == 'S':
     for i in top_dofs:
-        #resT.append(i[0])
-        #resT.append(i[2])
         resT.append(i[0])
         resT.append(i[1])
-        #resT.append(i[2])
-        #resT.append(i[3])
         resT.append(i[4])
 elif BCtop == 'C':
     for i in top_dofs:
         resT.append(i[0])
         resT.append(i[1])
-        resT.append(i[2])   
+        resT.append(i[2])
+        resT.append(i[3])
+        resT.append(i[4])
 elif BCtop == 'F':
     pass
 
 resB = []
 if BCbottom == 'S':
     for i in bottom_dofs:
-        #resB.append(i[0])
-        #resB.append(i[2])
         resB.append(i[0])
         resB.append(i[1])
-        #resB.append(i[2])
-        #resB.append(i[3])
         resB.append(i[4])
 elif BCbottom == 'C':
     for i in bottom_dofs:
         resB.append(i[0])
         resB.append(i[1])
         resB.append(i[2])
+        resB.append(i[3])
+        resB.append(i[4])
 elif BCbottom == 'F':
     pass
 
