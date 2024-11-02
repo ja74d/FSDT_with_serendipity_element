@@ -10,9 +10,13 @@ from gaussian_quad import RIP_Gauss
 #from scipy.linalg import lu_factor, lu_solve
 from scipy.sparse import csc_matrix
 from scipy.sparse.linalg import spsolve
+<<<<<<< HEAD
 from scipy.linalg import eig
 from isotropic_A_B_D_S import A, D, S, db, Db, Ds
 #from Single_FGM import A, D, S, db
+=======
+from isotropic_A_B_D_S import A, B, D, S, Db, Ds, db, ds
+>>>>>>> 869aa3cc66a713b9baae50c1acfa04331fe3c93f
 
 # Start the timer
 start = time.perf_counter()
@@ -51,7 +55,11 @@ def DNy(N):
     return (J_inv[1,0])*( sp.diff(N, k) ) + (J_inv[1,1])*( sp.diff(N, e) )
 
 def matrix_in_list(matrix_to_check, matrix_list):
+<<<<<<< HEAD
     matrix_to_check = (matrix_to_check) 
+=======
+    matrix_to_check = (matrix_to_check)
+>>>>>>> 869aa3cc66a713b9baae50c1acfa04331fe3c93f
 
 Jacob = []
 Ke = []
@@ -139,9 +147,17 @@ for elemc in tqdm(range(len(coordinations)),desc="Calculating elements"):
         Bb = []
         for i in range(8):
             BB = np.array([
+<<<<<<< HEAD
             [0, DNx(N[i]), 0, 0, 0],
             [0, 0, DNy(N[i]), 0, 0],
             [0,  DNy(N[i]), DNx(N[i]), 0, 0]
+=======
+
+            [0, DNx(N[i]), 0],
+            [0, 0 ,DNy(N[i])],
+            [0, DNy(N[i]), DNx(N[i])]
+
+>>>>>>> 869aa3cc66a713b9baae50c1acfa04331fe3c93f
             ])
             Bb.append(BB)
 
@@ -154,6 +170,11 @@ for elemc in tqdm(range(len(coordinations)),desc="Calculating elements"):
             ])
             Bs.append(BS)
 
+<<<<<<< HEAD
+=======
+            [DNx(N[i]), N[i], 0],
+            [DNy(N[i]), 0, N[i]],
+>>>>>>> 869aa3cc66a713b9baae50c1acfa04331fe3c93f
 
         Bgb = []
         for i in range(8):
@@ -192,6 +213,7 @@ for elemc in tqdm(range(len(coordinations)),desc="Calculating elements"):
         #Gaussian Integration Method *
         #Ke
 
+<<<<<<< HEAD
         def compute_km(i, j):
             return Bm[i].T @ A @ Bm[j]
         Gm = np.block([[compute_km(i, j) for j in range(8)] for i in range(8)])
@@ -218,6 +240,30 @@ for elemc in tqdm(range(len(coordinations)),desc="Calculating elements"):
         K_es = np.zeros((40, 40))
         for o in range(0, 40):
             for p in range(0, 40):
+=======
+        #Keb
+        def compute_kb(i, j):
+            return Bb[i].T @ Db @ Bb[j]
+
+        Gb = np.block([[compute_kb(i, j) for j in range(8)] for i in range(8)])
+
+        K_eb = np.zeros((24, 24))
+        for o in range(0, 24):
+            for p in range(0, 24):
+               #K_eb[o, p] = sp.integrate(sp.integrate((Gb[o, p]*det_J), (k, -1, 1)), (e, -1, 1))
+               K_eb[o, p] = RIP_Gauss(Gb[o, p]*det_J)
+
+        #Kes        
+        def calculate_ks(i, j):
+            return Bs[i].T @ Ds @ Bs[j]
+
+        Gs = np.block([[calculate_ks(i, j) for j in range(8)] for i in range(8)])
+
+        Gs = np.array(Gs)
+        K_es = np.zeros((24, 24))
+        for o in range(0, 24):
+            for p in range(0, 24):
+>>>>>>> 869aa3cc66a713b9baae50c1acfa04331fe3c93f
                 #K_es[o, p] = sp.integrate(sp.integrate((Gs[o, p]*det_J), (k, -1, 1)), (e, -1, 1))
                 K_es[o, p] = RIP_Gauss(Gs[o, p]*det_J)
         K_e = K_es + K_eb + K_em
