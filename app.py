@@ -145,25 +145,11 @@ for elemc in tqdm(range(len(coordinations)),desc="Calculating elements"):
         #Gaussian Integration Method *
         #Ke
 
+        #Keb
         def compute_kb(i, j):
-            return Bb[i].T @ D @ Bb[j]
-
+            return Bb[i].T @ Db @ Bb[j]
 
         Gb = np.block([[compute_kb(i, j) for j in range(8)] for i in range(8)])
-
-
-        K_eb = np.zeros((12, 12))
-        for o in range(0, 12):
-            for p in range(0, 12):
-               K_eb[o, p] = RIP_Gauss(Gb[o, p]*det_J)
-
-
-        def calculate_ks(i, j):
-            return Bs[i].T @ S @ Bs[j]
-
-
-        Gs = np.block([[calculate_ks(i, j) for j in range(8)] for i in range(8)])
-
 
         K_eb = np.zeros((24, 24))
         for o in range(0, 24):
@@ -171,6 +157,11 @@ for elemc in tqdm(range(len(coordinations)),desc="Calculating elements"):
                #K_eb[o, p] = sp.integrate(sp.integrate((Gb[o, p]*det_J), (k, -1, 1)), (e, -1, 1))
                K_eb[o, p] = RIP_Gauss(Gb[o, p]*det_J)
 
+        #Kes        
+        def calculate_ks(i, j):
+            return Bs[i].T @ Ds @ Bs[j]
+
+        Gs = np.block([[calculate_ks(i, j) for j in range(8)] for i in range(8)])
 
         Gs = np.array(Gs)
         K_es = np.zeros((24, 24))
