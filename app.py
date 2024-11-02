@@ -10,6 +10,7 @@ from gaussian_quad import RIP_Gauss
 #from scipy.linalg import lu_factor, lu_solve
 from scipy.sparse import csc_matrix
 from scipy.sparse.linalg import spsolve
+from isotropic_A_B_D_S import A, B, D, S, Db, Ds, db, ds
 
 # Start the timer
 start = time.perf_counter()
@@ -41,23 +42,7 @@ def DNy(N):
     return (J_inv[1,0])*( sp.diff(N, k) ) + (J_inv[1,1])*( sp.diff(N, e) )
 
 def matrix_in_list(matrix_to_check, matrix_list):
-    matrix_to_check = (matrix_to_check) 
-
-#D
-#Db matrix(Bending)
-db = (E*h**3)/(12*(1-(nu**2)))
-Db = db*np.array([
-    [1, nu, 0],
-    [nu, 1, 0],
-    [0, 0, (1-nu)/2]
-])
-
-#Ds matrix(shearing)
-ds = (E*h*(ka))/(2*(1+nu))
-Ds = ds*np.array([
-    [1, 0],
-    [0, 1]
-])
+    matrix_to_check = (matrix_to_check)
 
 Jacob = []
 Ke = []
@@ -134,9 +119,9 @@ for elemc in tqdm(range(len(coordinations)),desc="Calculating elements"):
 
             BB = np.array([
 
-            [0, 0, DNx(N[i])],
-            [0, -DNy(N[i]), 0],
-            [0, -DNx(N[i]), DNy(N[i])]
+            [0, DNx(N[i]), 0],
+            [0, 0 ,DNy(N[i])],
+            [0, DNy(N[i]), DNx(N[i])]
 
             ])
             Bb.append(BB)
@@ -148,8 +133,8 @@ for elemc in tqdm(range(len(coordinations)),desc="Calculating elements"):
         for i in range(8):
             BS = np.array([
 
-            [DNx(N[i]), 0, N[i]],
-            [DNy(N[i]), -N[i], 0],
+            [DNx(N[i]), N[i], 0],
+            [DNy(N[i]), 0, N[i]],
 
             ])
             Bs.append(BS)
@@ -161,7 +146,7 @@ for elemc in tqdm(range(len(coordinations)),desc="Calculating elements"):
         #Ke
 
         def compute_kb(i, j):
-            return Bb[i].T @ Db @ Bb[j]
+            return Bb[i].T @ D @ Bb[j]
 
 
         Gb = np.block([[compute_kb(i, j) for j in range(8)] for i in range(8)])
@@ -174,7 +159,7 @@ for elemc in tqdm(range(len(coordinations)),desc="Calculating elements"):
 
 
         def calculate_ks(i, j):
-            return Bs[i].T @ Ds @ Bs[j]
+            return Bs[i].T @ S @ Bs[j]
 
 
         Gs = np.block([[calculate_ks(i, j) for j in range(8)] for i in range(8)])

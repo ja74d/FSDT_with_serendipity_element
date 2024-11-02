@@ -3,7 +3,7 @@ import numpy as np
 
 gmsh.initialize()
 gmsh.option.setNumber("General.Terminal", 1)
-gmsh.open('/home/javad/FSDT_Plte/Mesh_models/msh.msh')
+gmsh.open('/home/javad/FSDT_with_serendipity_element/Mesh_models/msh.msh')
 
 #Nodes info
 node_tags, node_coords, _ = gmsh.model.mesh.getNodes()
