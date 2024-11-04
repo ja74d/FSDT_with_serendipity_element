@@ -1,4 +1,5 @@
 import time
+import sys
 import numpy as np
 import sympy as sp
 from tqdm import tqdm
@@ -12,7 +13,9 @@ from scipy.sparse import csc_matrix
 from scipy.sparse.linalg import spsolve
 from scipy.linalg import eig
 #from isotropic_A_B_D_S import A, D, S, db, Db, Ds
-from Single_FGM import A, D, S, db
+#from Single_FGM import A, D, S, db
+sys.path.append('/home/javad/FSDT_with_serendipity_element/Sandwich_FSDT')
+from Sandwich_FSDT.app import A, B, D, S
 
 # Start the timer
 start = time.perf_counter()
@@ -22,8 +25,8 @@ k, e = sp.symbols('k e')
 #k for kesi
 #e for eta
 
-S1 = ((np.pi**2)*db)/Lx**2
-
+#S1 = ((np.pi**2)*db)/Lx**2
+S1 = 1
 Sigma = np.array([
     [S1, 0],
     [0, 0]
@@ -257,6 +260,8 @@ for elem in range(num_elements):
                     #Kg[code[elem, i] - 1, code[elem, j] - 1] += Kge[elem][i, j]
             F[code[elem, i] - 1] += Fe[elem][i, 0]
 
+db = (Em*h**3)/(12*(1-(nu**2)))
+
 K_sparse = csc_matrix(K)
 Delta = spsolve(K_sparse, F)
 #lu, piv = lu_factor(K)
@@ -271,7 +276,7 @@ wmidND = (Wmid / (p0 * (Lx)**4 / db))
 # Output the result
 print(f"number of elements: {num_elements}")
 print(f"displacement at midpoint: {Wmid}")
-print(f"Non-dimensional displacement at midpoint: {wmidND}")
+print(f"Non-dimensional displacement at midpoint: {100*wmidND}")
 #eigenvalues, eigenvectors = eig(K, Kg)
 #print(f"Buckling load factor: {min(eigenvalues)}")
 

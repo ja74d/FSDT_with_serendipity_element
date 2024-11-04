@@ -6,7 +6,7 @@ n = 0
 
 #Mechanincal Properties
 #Ceramic-Aluminum
-Ec = 200e+09
+Ec = 151e+09
 Em = 70e+09
 
 E = 1
@@ -27,7 +27,7 @@ ka = K_dictionary[n]
 p0 = 1
 
 #Geometry
-Lx = 5
+Lx = 10
 
 #tolerance
 tol = 1e-10
