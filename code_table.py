@@ -1,9 +1,9 @@
 import numpy as np
 from input import *
-from mesh import Nex, Ney, elements, left_dofs, right_dofs, top_dofs, bottom_dofs
+from mesh import Nex, Ney, elements, left_dofs, right_dofs, top_dofs, bottom_dofs, num_nodes
 from collections import Counter
 
-num_nodes = (Nex+1)*(Ney+1)
+#num_nodes = (Nex+1)*(Ney+1)
 node_dofs = {}
 
 #This loop gives every node, its DOFs without considering its Boundary Conditions

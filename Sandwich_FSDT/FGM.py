@@ -2,9 +2,9 @@ import numpy as np
 from sympy import symbols, integrate
 
 #volume fraction index
-n = 10
+n = 0
 
-t1, t2, t3 = 1, 2, 1
+t1, t2, t3 = 1, 1, 1
 
 h_ = t1 + t2 + t3
 

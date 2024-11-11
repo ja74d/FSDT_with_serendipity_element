@@ -1,9 +1,11 @@
 import numpy as np
 from sympy import Matrix, integrate, symbols
 from Honeycomb import Ceramic_only
-from FGM import E_z_top, E_z_bottom, h0, h1, h2, h3, nu
+from FGM import E_z_top, E_z_bottom, h0, h1, h2, h3, nu, Em , h
 
 z = symbols('z')
+
+db = (Em*h**3)/(12*(1-(nu**2)))
 
 #Locations of top and bottom of each layer of the laminate
 #h = np.array([h0, h1, h2, h3])

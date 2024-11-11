@@ -12,10 +12,10 @@ from gaussian_quad import RIP_Gauss
 from scipy.sparse import csc_matrix
 from scipy.sparse.linalg import spsolve
 from scipy.linalg import eig
-#from isotropic_A_B_D_S import A, D, S, db, Db, Ds
+from isotropic_A_B_D_S import A, D, S, db, Db, Ds
 #from Single_FGM import A, D, S, db
-sys.path.append('/home/javad/FSDT_with_serendipity_element/Sandwich_FSDT')
-from Sandwich_FSDT.app import A, B, D, S
+#sys.path.append('/home/javad/FSDT_with_serendipity_element/Sandwich_FSDT')
+#from Sandwich_FSDT.app import A, B, D, S, db
 
 # Start the timer
 start = time.perf_counter()
@@ -25,8 +25,8 @@ k, e = sp.symbols('k e')
 #k for kesi
 #e for eta
 
-#S1 = ((np.pi**2)*db)/Lx**2
-S1 = 1
+S1 = ((np.pi**2)*db)/Lx**2
+#S1 = 1
 Sigma = np.array([
     [S1, 0],
     [0, 0]
@@ -100,19 +100,21 @@ for elemc in tqdm(range(len(coordinations)),desc="Calculating elements"):
 
     #Det J
     det_J = (J[0,0])*(J[1,1]) - (J[0,1])*(J[1,0])
-    for ij in Jacob:
-        ij_check = np.zeros((2, 2)); J_check = np.zeros((2,2))
-        J_check[0,0] = RIP_Gauss(J[0,0],3); J_check[0,1] = RIP_Gauss(J[0,1],3)
-        J_check[1,0] = RIP_Gauss(J[1,0],3); J_check[1,1] = RIP_Gauss(J[1,1],3)
-        ij_check[0,0] = RIP_Gauss(ij[0,0],3); ij_check[0,1] = RIP_Gauss(ij[0,1],3)
-        ij_check[1,0] = RIP_Gauss(ij[1,0],3); ij_check[1,1] = RIP_Gauss(ij[1,1],3)
-        
-        if (np.linalg.norm(ij_check) - np.linalg.norm(J_check)) < tol:
-            K_e = Ke[Jacob.index(ij)]
-            #K_eg = Kge[Jacob.index(ij)]
-            Ke.append(K_e)
-            #Kge.append(K_eg)
-            break
+    #for ij in Jacob:
+    #    ij_check = np.zeros((2, 2)); J_check = np.zeros((2,2))
+    #    J_check[0,0] = RIP_Gauss(J[0,0],3); J_check[0,1] = RIP_Gauss(J[0,1],3)
+    #    J_check[1,0] = RIP_Gauss(J[1,0],3); J_check[1,1] = RIP_Gauss(J[1,1],3)
+    #    ij_check[0,0] = RIP_Gauss(ij[0,0],3); ij_check[0,1] = RIP_Gauss(ij[0,1],3)
+    #    ij_check[1,0] = RIP_Gauss(ij[1,0],3); ij_check[1,1] = RIP_Gauss(ij[1,1],3)
+    #    
+    #    if abs((np.linalg.norm(ij_check) - np.linalg.norm(J_check))) < tol:
+    #        K_e = Ke[Jacob.index(ij)]
+    #        K_eg = Kge[Jacob.index(ij)]
+    #        Ke.append(K_e)
+    #        Kge.append(K_eg)
+    #        break
+    if Jacob_cache == 1:
+        pass
     else:
         Jacob.append(J)
 
@@ -180,13 +182,13 @@ for elemc in tqdm(range(len(coordinations)),desc="Calculating elements"):
 
         def calculate_kg(i, j):
             return h*( Bgb[i].T @ Sigma @ Bgb[j] ) + ((h**3)/12)*(Bgs1[i].T @ Sigma @ Bgs1[j])  + (((h**3)/12)*(Bgs2[i].T @ Sigma @ Bgs2[j]))
-        #Pg = np.block([[calculate_kg(i, j) for j in range(8)] for i in range(8)])
+        Pg = np.block([[calculate_kg(i, j) for j in range(8)] for i in range(8)])
 
-        #k_eg = np.zeros((40, 40))
-        #for o in range(0, 40):
-        #    for p in range(0, 40):
-        #        k_eg[o, p] = RIP_Gauss(Pg[o, p]*det_J)
-        #Kge.append(k_eg)
+        k_eg = np.zeros((40, 40))
+        for o in range(0, 40):
+            for p in range(0, 40):
+                k_eg[o, p] = RIP_Gauss(Pg[o, p]*det_J)
+        Kge.append(k_eg)
 
         #Gaussian Integration Method *
         #Ke
@@ -257,10 +259,10 @@ for elem in range(num_elements):
             for j in range(40):
                 if code[elem, j] != 0:
                     K[code[elem, i] - 1, code[elem, j] - 1] += Ke[elem][i, j]
-                    #Kg[code[elem, i] - 1, code[elem, j] - 1] += Kge[elem][i, j]
+                    Kg[code[elem, i] - 1, code[elem, j] - 1] += Kge[elem][i, j]
             F[code[elem, i] - 1] += Fe[elem][i, 0]
 
-db = (Em*h**3)/(12*(1-(nu**2)))
+#db = (Em*h**3)/(12*(1-(nu**2)))
 
 K_sparse = csc_matrix(K)
 Delta = spsolve(K_sparse, F)

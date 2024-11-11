@@ -99,4 +99,6 @@ for i in node_per_element:
 coordinations = [coordinations[i:i+8] for i in range(0, len(coordinations), 8)]
 #print(coordinations)
 
+num_nodes = len(nodal_coor)
+
 gmsh.finalize()

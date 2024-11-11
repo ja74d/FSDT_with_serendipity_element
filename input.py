@@ -2,11 +2,11 @@
 BCleft, BCright, BCtop, BCbottom = 'S', 'S', 'S', 'S'
 
 #volume fraction index "n"
-n = 0
+n = 1
 
 #Mechanincal Properties
 #Ceramic-Aluminum
-Ec = 151e+09
+Ec = 380e+09
 Em = 70e+09
 
 E = 1
@@ -31,3 +31,6 @@ Lx = 10
 
 #tolerance
 tol = 1e-10
+
+#Jacobian cache status
+Jacob_cache = 0
