@@ -80,41 +80,41 @@ for elemc in tqdm(range(len(coordinations)),desc="Calculating elements"):
 
     j00 = 0
     for i in range(8):
-        j00 += sp.diff(N[i], k) * element_coordinates[i][0]
+        j00 += sp.diff(N[i], k) * float(element_coordinates[i][0])
     J[0, 0] = j00
 
     j01 = 0
     for i in range(8):
-        j01 += sp.diff(N[i], k) * element_coordinates[i][1]
+        j01 += sp.diff(N[i], k) * float(element_coordinates[i][1])
     J[0, 1] = j01
 
     j10 = 0
     for i in range(8):
-        j10 += sp.diff(N[i], e) * element_coordinates[i][0]
+        j10 += sp.diff(N[i], e) * float(element_coordinates[i][0])
     J[1, 0] = j10
 
     j11 = 0
     for i in range(8):
-        j11 += sp.diff(N[i], e) * element_coordinates[i][1]
+        j11 += sp.diff(N[i], e) * float(element_coordinates[i][1])
     J[1, 1] = j11
 
     #Det J
     det_J = (J[0,0])*(J[1,1]) - (J[0,1])*(J[1,0])
-    #for ij in Jacob:
-    #    ij_check = np.zeros((2, 2)); J_check = np.zeros((2,2))
-    #    J_check[0,0] = RIP_Gauss(J[0,0],3); J_check[0,1] = RIP_Gauss(J[0,1],3)
-    #    J_check[1,0] = RIP_Gauss(J[1,0],3); J_check[1,1] = RIP_Gauss(J[1,1],3)
-    #    ij_check[0,0] = RIP_Gauss(ij[0,0],3); ij_check[0,1] = RIP_Gauss(ij[0,1],3)
-    #    ij_check[1,0] = RIP_Gauss(ij[1,0],3); ij_check[1,1] = RIP_Gauss(ij[1,1],3)
-    #    
-    #    if abs((np.linalg.norm(ij_check) - np.linalg.norm(J_check))) < tol:
-    #        K_e = Ke[Jacob.index(ij)]
-    #        K_eg = Kge[Jacob.index(ij)]
-    #        Ke.append(K_e)
-    #        Kge.append(K_eg)
-    #        break
-    if Jacob_cache == 1:
-        pass
+    for ij in Jacob:
+        ij_check = np.zeros((2, 2)); J_check = np.zeros((2,2))
+        J_check[0,0] = RIP_Gauss(J[0,0],3); J_check[0,1] = RIP_Gauss(J[0,1],3)
+        J_check[1,0] = RIP_Gauss(J[1,0],3); J_check[1,1] = RIP_Gauss(J[1,1],3)
+        ij_check[0,0] = RIP_Gauss(ij[0,0],3); ij_check[0,1] = RIP_Gauss(ij[0,1],3)
+        ij_check[1,0] = RIP_Gauss(ij[1,0],3); ij_check[1,1] = RIP_Gauss(ij[1,1],3)
+        
+        if abs((np.linalg.norm(ij_check) - np.linalg.norm(J_check))) < tol:
+            K_e = Ke[Jacob.index(ij)]
+            K_eg = Kge[Jacob.index(ij)]
+            Ke.append(K_e)
+            Kge.append(K_eg)
+            break
+    #if Jacob_cache == 1:
+    #    pass
     else:
         Jacob.append(J)
 
