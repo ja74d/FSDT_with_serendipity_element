@@ -1,5 +1,6 @@
 import time
 import sys
+import h5py
 import numpy as np
 import sympy as sp
 from tqdm import tqdm
@@ -45,8 +46,6 @@ count = 0
 
 
 for elemc in tqdm(range(len(coordinations)),desc="Calculating elements"):
-    # Start the timer
-    #start_time = time.perf_counter()
     element_coordinates = coordinations[elemc]
     count += 1
     n_elem = len(code)
@@ -206,13 +205,6 @@ for elemc in tqdm(range(len(coordinations)),desc="Calculating elements"):
         #F_e[i,0] = sp.integrate(sp.integrate( (p0*Nw[i]*det_J), (k,-1,1) ),(e,-1,1))
         F_e[i, 0] = RIP_Gauss(p0*Nw[i]*det_J)
     Fe.append(F_e)
-    
-    # End the timer
-    #end_time = time.perf_counter()
-    # Calculate elapsed time
-    #elapsed_time = end_time - start_time
-    #print(f"Time taken: {elapsed_time} seconds")
-
 
 #Assembling
 num_dofs = np.max(code)
@@ -256,3 +248,22 @@ end = time.perf_counter()
 # Calculate elapsed time
 elapsed_time = end - start
 print(f"Time taken: {elapsed_time} seconds")
+
+#Saving the Results
+with h5py.File(f'{file_name}.h5', 'w') as hdf:
+
+    # Create a group for matrices
+    matrices_group = hdf.create_group('Matrices')
+    matrices_group.create_dataset('Stiffness_Matrix', data=K)
+    matrices_group.create_dataset('Force_Matrix', data=F)
+    matrices_group.create_dataset('Geometrical_Matrix', data=Kg)
+
+    # Create a group for nodal data
+    nodal_group = hdf.create_group('Nodal_Data')
+    nodal_group.create_dataset('Nodal_Displacement', data=Delta)
+
+    # You can also add attributes for metadata
+    hdf.attrs['Description'] = 'Finite Element Analysis Results'
+    hdf.attrs['Version'] = '1.0'
+
+print(f"Data has been saved in '{file_name}.h5'")
