@@ -1,3 +1,6 @@
+#File Name
+file_name = 'test file'
+
 #B.C.
 BCleft, BCright, BCtop, BCbottom = 'S', 'S', 'S', 'S'
 
@@ -27,7 +30,10 @@ ka = K_dictionary[n]
 p0 = 1
 
 #Geometry
-Lx = 10
+Lx = Ly = 10
+
+#d
+d = (E*h**3)/(12*(1-nu**2))
 
 #tolerance
 tol = 1e-6

@@ -73,18 +73,18 @@ for elemc in tqdm(range(len(coordinations)),desc="Calculating elements"):
 
     #Det J
     det_J = (J[0,0])*(J[1,1]) - (J[0,1])*(J[1,0])
-    for ij in Jacob:
-        J_check = apply_rip_gauss(J, 3)
-        ij_check = apply_rip_gauss(ij, 3)
-        
-        if abs((np.linalg.norm(ij_check) - np.linalg.norm(J_check))) < tol:
-            K_e = Ke[Jacob.index(ij)]
-            K_eg = Kge[Jacob.index(ij)]
-            Ke.append(K_e)
-            Kge.append(K_eg)
-            break
-    #if Jacob_cache == 1:
-    #    pass
+    #for ij in Jacob:
+    #    J_check = apply_rip_gauss(J, 3)
+    #    ij_check = apply_rip_gauss(ij, 3)
+    #    
+    #    if abs((np.linalg.norm(ij_check) - np.linalg.norm(J_check))) < tol:
+    #        K_e = Ke[Jacob.index(ij)]
+    #        K_eg = Kge[Jacob.index(ij)]
+    #        Ke.append(K_e)
+    #        Kge.append(K_eg)
+    #        break
+    if Jacob_cache == 1:
+        pass
     else:
         Jacob.append(J)
 
