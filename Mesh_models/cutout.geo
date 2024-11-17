@@ -62,3 +62,23 @@ Recombine Surface {1};
 Transfinite Curve {4, 1, 2, 3} = 11 Using Progression 1;
 //+
 Transfinite Curve {8, 5, 6, 7} = 3 Using Progression 1;
+//+
+Transfinite Curve {4, 1, 2, 3} = 16 Using Progression 1;
+//+
+Transfinite Curve {8, 5, 6, 7} = 16 Using Progression 1;
+//+
+Transfinite Curve {4, 1, 2, 3} = 17 Using Progression 1;
+//+
+Transfinite Curve {8, 5, 6, 7} = 9 Using Progression 1;
+//+
+Transfinite Curve {4, 1, 2, 3} = 9 Using Progression 1;
+//+
+Transfinite Curve {8, 5, 6, 7} = 5 Using Progression 1;
+//+
+Transfinite Curve {4, 1, 2, 3} = 5 Using Progression 1;
+//+
+Transfinite Curve {8, 5, 6, 7} = 3 Using Progression 1;
+//+
+Transfinite Curve {4, 1, 2, 3} = 9 Using Progression 1;
+//+
+Transfinite Curve {8, 5, 6, 7} = 5 Using Progression 1;
