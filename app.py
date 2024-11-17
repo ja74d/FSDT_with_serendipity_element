@@ -3,16 +3,19 @@ import sys
 import numpy as np
 import sympy as sp
 from tqdm import tqdm
+from interpolation_functions import *
 from sympy import Matrix
 from input import *
 from mesh import coordinations
 from code_table import code
-from gaussian_quad import RIP_Gauss
+from gaussian_quad import RIP_Gauss, apply_rip_gauss
 #from scipy.linalg import lu_factor, lu_solve
 from scipy.sparse import csc_matrix
 from scipy.sparse.linalg import spsolve
 from scipy.linalg import eig
 from isotropic_A_B_D_S import A, D, S, db, Db, Ds
+from scipy.sparse import csc_matrix
+from scipy.sparse.linalg import eigsh
 #from Single_FGM import A, D, S, db
 #sys.path.append('/home/javad/FSDT_with_serendipity_element/Sandwich_FSDT')
 #from Sandwich_FSDT.app import A, B, D, S, db
@@ -20,38 +23,19 @@ from isotropic_A_B_D_S import A, D, S, db, Db, Ds
 # Start the timer
 start = time.perf_counter()
 
-#Symboles
-k, e = sp.symbols('k e')
-#k for kesi
-#e for eta
-
-S1 = ((np.pi**2)*db)/Lx**2
-#S1 = 1
+#S1 = ((np.pi**2)*db)/Lx**2
+S1 = 1
 Sigma = np.array([
     [S1, 0],
     [0, 0]
 ])
 
-#Lagrangian Interpolation Functions
-N1 = (1/4)*(1-k)*(1+e)*(-k+e-1)
-N2 = (1/4)*(1+k)*(1+e)*(k+e-1)
-N3 = (1/4)*(1+k)*(1-e)*(k-e-1)
-N4 = (1/4)*(1-k)*(1-e)*(-k-e-1)
+def DNx(i):
+    return (J_inv[0,0])*( dNdk[i] ) + (J_inv[0,1])*( dNde[i] )
 
-N5 = (1/2)*(1-k**2)*(1+e)
-N7 = (1/2)*(1-k**2)*(1-e)
+def DNy(i):
+    return (J_inv[1,0])*( dNdk[i] ) + (J_inv[1,1])*( dNde[i] )
 
-N6 = (1/2)*(1+k)*(1-e**2)
-N8 = (1/2)*(1-k)*(1-e**2)
-
-N = np.array([N1, N2, N3, N4, N5, N6, N7, N8])
-Nw = np.array([N[0], 0, 0, 0, 0, N[1], 0, 0, 0, 0, N[2], 0, 0, 0, 0, N[3], 0, 0,0 , 0, N[4], 0, 0, 0 ,0 , N[5], 0, 0, 0, 0, N[6], 0, 0,0 , 0, N[7], 0, 0, 0, 0])
-
-def DNx(N):
-    return (J_inv[0,0])*( sp.diff(N, k) ) + (J_inv[0,1])*( sp.diff(N, e) )
-
-def DNy(N):
-    return (J_inv[1,0])*( sp.diff(N, k) ) + (J_inv[1,1])*( sp.diff(N, e) )
 
 Jacob = []
 Ke = []
@@ -66,10 +50,6 @@ for elemc in tqdm(range(len(coordinations)),desc="Calculating elements"):
     element_coordinates = coordinations[elemc]
     count += 1
     n_elem = len(code)
-    #if (count + 1) % (n_elem // 20) == 0:
-    #    percentage_complete = (count + 1) / n_elem * 100
-    #    print(f"{percentage_complete:.1f}% complete")
-
 
     #Saving Private Jacobian
     #symbolic in jacobian
@@ -79,33 +59,24 @@ for elemc in tqdm(range(len(coordinations)),desc="Calculating elements"):
     ])
 
     j00 = 0
-    for i in range(8):
-        j00 += sp.diff(N[i], k) * float(element_coordinates[i][0])
-    J[0, 0] = j00
-
     j01 = 0
-    for i in range(8):
-        j01 += sp.diff(N[i], k) * float(element_coordinates[i][1])
-    J[0, 1] = j01
-
     j10 = 0
-    for i in range(8):
-        j10 += sp.diff(N[i], e) * float(element_coordinates[i][0])
-    J[1, 0] = j10
-
     j11 = 0
     for i in range(8):
-        j11 += sp.diff(N[i], e) * float(element_coordinates[i][1])
+        j00 += dNdk[i] * float(element_coordinates[i][0])
+        j01 += dNdk[i] * float(element_coordinates[i][1])
+        j10 += dNde[i] * float(element_coordinates[i][0])
+        j11 += dNde[i] * float(element_coordinates[i][1])
+    J[0, 0] = j00
+    J[0, 1] = j01
+    J[1, 0] = j10
     J[1, 1] = j11
 
     #Det J
     det_J = (J[0,0])*(J[1,1]) - (J[0,1])*(J[1,0])
     for ij in Jacob:
-        ij_check = np.zeros((2, 2)); J_check = np.zeros((2,2))
-        J_check[0,0] = RIP_Gauss(J[0,0],3); J_check[0,1] = RIP_Gauss(J[0,1],3)
-        J_check[1,0] = RIP_Gauss(J[1,0],3); J_check[1,1] = RIP_Gauss(J[1,1],3)
-        ij_check[0,0] = RIP_Gauss(ij[0,0],3); ij_check[0,1] = RIP_Gauss(ij[0,1],3)
-        ij_check[1,0] = RIP_Gauss(ij[1,0],3); ij_check[1,1] = RIP_Gauss(ij[1,1],3)
+        J_check = apply_rip_gauss(J, 3)
+        ij_check = apply_rip_gauss(ij, 3)
         
         if abs((np.linalg.norm(ij_check) - np.linalg.norm(J_check))) < tol:
             K_e = Ke[Jacob.index(ij)]
@@ -125,15 +96,14 @@ for elemc in tqdm(range(len(coordinations)),desc="Calculating elements"):
             [-J[0,1], J[0,0]]
         ])
 
-
         #B
         #Bb matrix(Bending)
         Bm = []
         for i in range(8):
             BM = np.array([
-                [0, 0, 0, DNx(N[i]), 0],
-                [0, 0, 0, 0, DNy(N[i])],
-                [0, 0, 0, DNy(N[i]), DNx(N[i])]
+            [0, 0, 0, DNx(i), 0],
+            [0, 0, 0, 0, DNy(i)],
+            [0, 0, 0, DNy(i), DNx(i)]
             ])
             Bm.append(BM)
 
@@ -141,9 +111,9 @@ for elemc in tqdm(range(len(coordinations)),desc="Calculating elements"):
         Bb = []
         for i in range(8):
             BB = np.array([
-            [0, DNx(N[i]), 0, 0, 0],
-            [0, 0, DNy(N[i]), 0, 0],
-            [0,  DNy(N[i]), DNx(N[i]), 0, 0]
+            [0, DNx(i), 0, 0, 0],
+            [0, 0, DNy(i), 0, 0],
+            [0,  DNy(i), DNx(i), 0, 0]
             ])
             Bb.append(BB)
 
@@ -151,32 +121,32 @@ for elemc in tqdm(range(len(coordinations)),desc="Calculating elements"):
         Bs = []
         for i in range(8):
             BS = np.array([
-            [DNx(N[i]), N[i], 0, 0, 0],
-            [DNy(N[i]), 0, N[i], 0 , 0],
+            [DNx(i), N[i], 0, 0, 0],
+            [DNy(i), 0, N[i], 0 , 0],
             ])
             Bs.append(BS)
 
         Bgb = []
         for i in range(8):
             BGB = np.array([
-                [DNx(N[i]), 0, 0, 0, 0],
-                [DNy(N[i]), 0, 0, 0, 0]
+                [DNx(i), 0, 0, 0, 0],
+                [DNy(i), 0, 0, 0, 0]
             ])
             Bgb.append(BGB)
 
         Bgs1 = []
         for i in range(8):
             BGS1 = np.array([
-                [0, 0, DNx(N[i]), 0, 0],
-                [0, 0, DNy(N[i]), 0, 0]
+                [0, 0, DNx(i), 0, 0],
+                [0, 0, DNy(i), 0, 0]
             ])
             Bgs1.append(BGS1)
 
         Bgs2 = []
         for i in range(8):
             BGS2 = np.array([
-                [0, DNx(N[i]), 0, 0, 0],
-                [0, DNy(N[i]), 0, 0, 0]
+                [0, DNx(i), 0, 0, 0],
+                [0, DNy(i), 0, 0, 0]
             ])
             Bgs2.append(BGS2)
 
@@ -279,8 +249,6 @@ wmidND = (Wmid / (p0 * (Lx)**4 / db))
 print(f"number of elements: {num_elements}")
 print(f"displacement at midpoint: {Wmid}")
 print(f"Non-dimensional displacement at midpoint: {100*wmidND}")
-#eigenvalues, eigenvectors = eig(K, Kg)
-#print(f"Buckling load factor: {min(eigenvalues)}")
 
 # End the timer
 end = time.perf_counter()

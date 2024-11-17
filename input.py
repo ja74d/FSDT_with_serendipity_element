@@ -30,7 +30,7 @@ p0 = 1
 Lx = 10
 
 #tolerance
-tol = 1e-10
+tol = 1e-6
 
 #Jacobian cache status
 Jacob_cache = 0
