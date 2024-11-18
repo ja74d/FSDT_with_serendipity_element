@@ -22,10 +22,7 @@ def gaussian_quadrature(n):
     weights = [sp.N(wi) for wi in weights]
     
     return abscissas, weights
-#abscissas, weights = gaussian_quadrature(5)
 
-abscissas = [0, -0.538469310105683, 0.538469310105683, -0.906179845938664, 0.906179845938664]
-weights = [0.568888888888889, 0.478628670499366, 0.478628670499366, 0.236926885056189, 0.236926885056189]
 
 def RIP_Gauss(fn, n=3):
     if fn == 0:

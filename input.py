@@ -36,7 +36,7 @@ Lx = Ly = 10
 d = (E*h**3)/(12*(1-nu**2))
 
 #tolerance
-tol = 1e-6
+tol = 1e-4
 
 #Jacobian cache status
 Jacob_cache = 0
