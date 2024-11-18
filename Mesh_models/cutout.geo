@@ -1,11 +1,11 @@
-// Gmsh project created on Sun Nov 10 21:52:56 2024
+// Gmsh project created on Sun Nov 17 20:58:10 2024
 SetFactory("OpenCASCADE");
 //+
-Point(1) = {0, 10, 0, 1.0};
+Point(1) = {10, 0, 0, 1.0};
 //+
 Point(2) = {10, 10, 0, 1.0};
 //+
-Point(3) = {10, 0, 0, 1.0};
+Point(3) = {0, 10, 0, 1.0};
 //+
 Point(4) = {0, 0, 0, 1.0};
 //+
@@ -17,13 +17,13 @@ Point(7) = {6, 6, 0, 1.0};
 //+
 Point(8) = {6, 4, 0, 1.0};
 //+
-Line(1) = {1, 2};
+Line(1) = {3, 2};
 //+
-Line(2) = {2, 3};
+Line(2) = {2, 1};
 //+
-Line(3) = {3, 4};
+Line(3) = {1, 4};
 //+
-Line(4) = {4, 1};
+Line(4) = {4, 3};
 //+
 Line(5) = {6, 7};
 //+
@@ -47,25 +47,17 @@ Physical Curve("Right", 11) = {2};
 //+
 Physical Curve("Bottom", 12) = {3};
 //+
-Physical Point("Bottom", 13) = {4, 3};
+Physical Point("Bottom", 13) = {4, 1};
 //+
-Physical Point("Left", 14) = {4, 1};
+Physical Point("Left", 14) = {4, 3};
 //+
-Physical Point("Top", 15) = {1, 2};
+Physical Point("Top", 15) = {3, 2};
 //+
-Physical Point("Right", 16) = {2, 3};
+Physical Point("Right", 16) = {2, 1};
 //+
 Transfinite Surface {1};
 //+
 Recombine Surface {1};
-//+
-Transfinite Curve {4, 1, 2, 3} = 11 Using Progression 1;
-//+
-Transfinite Curve {8, 5, 6, 7} = 3 Using Progression 1;
-//+
-Transfinite Curve {4, 1, 2, 3} = 16 Using Progression 1;
-//+
-Transfinite Curve {8, 5, 6, 7} = 16 Using Progression 1;
 //+
 Transfinite Curve {4, 1, 2, 3} = 17 Using Progression 1;
 //+
@@ -75,10 +67,6 @@ Transfinite Curve {4, 1, 2, 3} = 9 Using Progression 1;
 //+
 Transfinite Curve {8, 5, 6, 7} = 5 Using Progression 1;
 //+
-Transfinite Curve {4, 1, 2, 3} = 5 Using Progression 1;
+Transfinite Curve {4, 1, 2, 3} = 11 Using Progression 1;
 //+
-Transfinite Curve {8, 5, 6, 7} = 3 Using Progression 1;
-//+
-Transfinite Curve {4, 1, 2, 3} = 9 Using Progression 1;
-//+
-Transfinite Curve {8, 5, 6, 7} = 5 Using Progression 1;
+Transfinite Curve {8, 5, 6, 7} = 6 Using Progression 1;
