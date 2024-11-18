@@ -38,6 +38,38 @@ def DNy(i):
     return (J_inv[1,0])*( dNdk[i] ) + (J_inv[1,1])*( dNde[i] )
 
 
+def Bm_function(i):
+    return np.array([
+        [0, 0, 0, DNx(i), 0],
+        [0, 0, 0, 0, DNy(i)],
+        [0, 0, 0, DNy(i), DNx(i)]])
+
+def Bb_function(i):
+    return np.array([
+        [0, DNx(i), 0, 0, 0],
+        [0, 0, DNy(i), 0, 0],
+        [0,  DNy(i), DNx(i), 0, 0]])
+
+def Bs_function(i):
+    return np.array([
+        [DNx(i), N[i], 0, 0, 0],
+        [DNy(i), 0, N[i], 0, 0],])
+
+def BGb_function(i):
+    return  np.array([
+            [DNx(i), 0, 0, 0, 0],
+            [DNy(i), 0, 0, 0, 0]])
+
+def Bgs1_function(i):
+    return np.array([
+            [0, 0, DNx(i), 0, 0],
+            [0, 0, DNy(i), 0, 0]])
+
+def Bgs2_function(i):
+    return np.array([
+            [0, DNx(i), 0, 0, 0],
+            [0, DNy(i), 0, 0, 0]])
+
 Jacob = []
 Ke = []
 Kge = []
@@ -73,18 +105,18 @@ for elemc in tqdm(range(len(coordinations)),desc="Calculating elements"):
 
     #Det J
     det_J = (J[0,0])*(J[1,1]) - (J[0,1])*(J[1,0])
-    #for ij in Jacob:
-    #    J_check = apply_rip_gauss(J, 3)
-    #    ij_check = apply_rip_gauss(ij, 3)
-    #    
-    #    if abs((np.linalg.norm(ij_check) - np.linalg.norm(J_check))) < tol:
-    #        K_e = Ke[Jacob.index(ij)]
-    #        K_eg = Kge[Jacob.index(ij)]
-    #        Ke.append(K_e)
-    #        Kge.append(K_eg)
-    #        break
-    if Jacob_cache == 1:
-        pass
+    for ij in Jacob:
+        J_check = apply_rip_gauss(J, 3)
+        ij_check = apply_rip_gauss(ij, 3)
+        
+        if abs((np.linalg.norm(ij_check) - np.linalg.norm(J_check))) < tol:
+            K_e = Ke[Jacob.index(ij)]
+            K_eg = Kge[Jacob.index(ij)]
+            Ke.append(K_e)
+            Kge.append(K_eg)
+            break
+    #if Jacob_cache == 1:
+    #    pass
     else:
         Jacob.append(J)
 
@@ -96,58 +128,22 @@ for elemc in tqdm(range(len(coordinations)),desc="Calculating elements"):
         ])
 
         #B
-        #Bb matrix(Bending)
-        Bm = []
-        for i in range(8):
-            BM = np.array([
-            [0, 0, 0, DNx(i), 0],
-            [0, 0, 0, 0, DNy(i)],
-            [0, 0, 0, DNy(i), DNx(i)]
-            ])
-            Bm.append(BM)
+        #Bm matrix(membrane)
+        Bm = [Bm_function(0), Bm_function(1), Bm_function(2), Bm_function(3), Bm_function(4), Bm_function(5), Bm_function(6), Bm_function(7)]
 
         #Bb matrix(Bending)
-        Bb = []
-        for i in range(8):
-            BB = np.array([
-            [0, DNx(i), 0, 0, 0],
-            [0, 0, DNy(i), 0, 0],
-            [0,  DNy(i), DNx(i), 0, 0]
-            ])
-            Bb.append(BB)
+        Bb = [Bb_function(0), Bb_function(1), Bb_function(2), Bb_function(3), Bb_function(4), Bb_function(5), Bb_function(6), Bb_function(7)]
 
         #Bs matrix(Shearing)
-        Bs = []
-        for i in range(8):
-            BS = np.array([
-            [DNx(i), N[i], 0, 0, 0],
-            [DNy(i), 0, N[i], 0 , 0],
-            ])
-            Bs.append(BS)
+        Bs = [Bs_function(0), Bs_function(1), Bs_function(2), Bs_function(3), Bs_function(4), Bs_function(5), Bs_function(6), Bs_function(7)]
+        
+        #Bg matrix(Geometric)
+        Bgb = [BGb_function(0), BGb_function(1), BGb_function(2), BGb_function(3), BGb_function(4), BGb_function(5), BGb_function(6), BGb_function(7)]
 
-        Bgb = []
-        for i in range(8):
-            BGB = np.array([
-                [DNx(i), 0, 0, 0, 0],
-                [DNy(i), 0, 0, 0, 0]
-            ])
-            Bgb.append(BGB)
+        Bgs1 = [Bgs1_function(0), Bgs1_function(1), Bgs1_function(2), Bgs1_function(3), Bgs1_function(4), Bgs1_function(5), Bgs1_function(6), Bgs1_function(7)]
 
-        Bgs1 = []
-        for i in range(8):
-            BGS1 = np.array([
-                [0, 0, DNx(i), 0, 0],
-                [0, 0, DNy(i), 0, 0]
-            ])
-            Bgs1.append(BGS1)
+        Bgs2 = [Bgs2_function(0), Bgs2_function(1), Bgs2_function(2), Bgs2_function(3), Bgs2_function(4), Bgs2_function(5), Bgs2_function(6), Bgs2_function(7)]
 
-        Bgs2 = []
-        for i in range(8):
-            BGS2 = np.array([
-                [0, DNx(i), 0, 0, 0],
-                [0, DNy(i), 0, 0, 0]
-            ])
-            Bgs2.append(BGS2)
 
         def calculate_kg(i, j):
             return h*( Bgb[i].T @ Sigma @ Bgb[j] ) + ((h**3)/12)*(Bgs1[i].T @ Sigma @ Bgs1[j])  + (((h**3)/12)*(Bgs2[i].T @ Sigma @ Bgs2[j]))
