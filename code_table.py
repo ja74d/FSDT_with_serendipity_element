@@ -54,6 +54,13 @@ elif BCright == 'C':
         resR.append(i[2])
         resR.append(i[3])
         resR.append(i[4])
+elif BCright == 'Sym':
+    for i in right_dofs:
+        #resR.append(i[0])
+        resR.append(i[1])
+        #resR.append(i[2])
+        resR.append(i[3])
+        #resR.append(i[4])
 elif BCright == 'F':
     pass
 
@@ -85,6 +92,13 @@ elif BCbottom == 'C':
         resB.append(i[1])
         resB.append(i[2])
         resB.append(i[3])
+        resB.append(i[4])
+elif BCbottom == 'Sym':
+    for i in bottom_dofs:
+        #resB.append(i[0])
+        #resB.append(i[1])
+        resB.append(i[2])
+        #resB.append(i[3])
         resB.append(i[4])
 elif BCbottom == 'F':
     pass

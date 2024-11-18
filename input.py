@@ -2,7 +2,7 @@
 file_name = 'test file'
 
 #B.C.
-BCleft, BCright, BCtop, BCbottom = 'S', 'S', 'S', 'S'
+BCleft, BCright, BCtop, BCbottom = 'S', 'Sym', 'S', 'Sym'
 
 #volume fraction index "n"
 n = 1
