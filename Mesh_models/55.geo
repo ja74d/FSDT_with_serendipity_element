@@ -50,3 +50,5 @@ Transfinite Curve {1, 2, 3, 4} = 65 Using Progression 1;
 Transfinite Curve {1, 2, 3, 4} = 17 Using Progression 1;
 //+
 Transfinite Curve {1, 2, 3, 4} = 33 Using Progression 1;
+//+
+Transfinite Curve {1, 2, 3, 4} = 9 Using Progression 1;
