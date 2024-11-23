@@ -1,6 +1,6 @@
 import numpy as np
 from input import *
-from mesh import Nex, Ney, elements, left_dofs, right_dofs, top_dofs, bottom_dofs, num_nodes
+from mesh import Nex, Ney, elements, left_dofs, right_dofs, top_dofs, bottom_dofs, num_nodes, coordinations
 from collections import Counter
 
 #num_nodes = (Nex+1)*(Ney+1)

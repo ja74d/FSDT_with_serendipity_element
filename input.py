@@ -28,6 +28,7 @@ ka = K_dictionary[n]
 
 #Distributed Load
 p0 = 1
+po = 1
 
 #Geometry
 Lx = Ly = 10

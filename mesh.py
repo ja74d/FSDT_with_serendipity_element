@@ -1,9 +1,17 @@
 import gmsh
+import os
 import numpy as np
+
+Hole = 0
+
+pwd = os.getcwd()
+
+filepath = os.path.join(pwd, 'Mesh_models', 'msh.msh')
 
 gmsh.initialize()
 gmsh.option.setNumber("General.Terminal", 1)
-gmsh.open('/home/javad/FSDT_with_serendipity_element/Mesh_models/msh.msh')
+#gmsh.open('/home/javad/FSDT_Sandwich/Mesh_models/msh.msh')
+gmsh.open(filepath)
 
 #Nodes info
 node_tags, node_coords, _ = gmsh.model.mesh.getNodes()
@@ -69,26 +77,40 @@ for i in Boundary['Left']:
 
 right_dofs = []
 for i in Boundary['Right']:
+    #R = [int(3*i-2), int(3*i-1), int(3*i)]
     R = [int(5*i-4), int(5*i-3), int(5*i-2), int(5*i-1), int(5*i)]
     right_dofs.append(R)
 
 top_dofs = []
 for i in Boundary['Top']:
+    #T = [ int(3*i-2), int(3*i-1), int(3*i) ]
     T = [int(5*i-4), int(5*i-3), int(5*i-2), int(5*i-1), int(5*i)]
     top_dofs.append(T)
 
 bottom_dofs = []
 for i in Boundary['Bottom']:
+    #B = [ int(3*i-2), int(3*i-1), int(3*i) ]
     B = [int(5*i-4), int(5*i-3), int(5*i-2), int(5*i-1), int(5*i)]
     bottom_dofs.append(B)
 
+if Hole == 1:
+    hole_dofs = []
+    for i in Boundary['Hole']:
+        #B = [ int(3*i-2), int(3*i-1), int(3*i) ]
+        H = [int(5*i-4), int(5*i-3), int(5*i-2), int(5*i-1), int(5*i)]
+        hole_dofs.append(H)
+else:
+    hole_dofs = []
+
 elements = np.array(node_per_element)
+
 
 #numbr of elements in x and y direction
 Nex = len(Boundary['Left']) - 1
 Ney = len(Boundary['Top']) - 1
 
 nodal_coor = node_coords.reshape(-1,3)
+num_nodes = len(nodal_coor)
 
 coordinations = []
 
@@ -97,8 +119,9 @@ for i in node_per_element:
         coordinations.append(nodal_coor[int(i[j]-1)])
 
 coordinations = [coordinations[i:i+8] for i in range(0, len(coordinations), 8)]
+#size = abs(coordinations[0][0][0] - coordinations[0][1][0])
 #print(coordinations)
+#Lx = (Nel**0.5)*size
 
-num_nodes = len(nodal_coor)
 
 gmsh.finalize()
