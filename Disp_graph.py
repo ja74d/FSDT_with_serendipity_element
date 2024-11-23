@@ -1,5 +1,5 @@
 import numpy as np
-from input import Lx, Ly, d, po
+from input import Lx, Ly, d, po, tol
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from scipy.interpolate import griddata
@@ -9,7 +9,7 @@ from mesh import Nex, Ney
 from READ_HDF5 import Delta
 
 Delta = Delta / (po * Lx**4 / d)
-D = -Delta
+D = -100*Delta
 
 #D = [ 1.42871531e+02, -1.42871531e+02, -1.42871531e+02,  1.42871531e+02, 3.98707348e+02,  3.09391738e-14, -9.85579493e-15, -1.27970898e-13]
 
@@ -51,18 +51,14 @@ ax = fig.add_subplot(111, projection='3d')
 ax.set_box_aspect([1, 1, 1])  # Equal scaling for x, y, z
 
 surf = ax.plot_surface(grid_x, grid_y, grid_z, cmap='rainbow')
-#fig.colorbar(surf, shrink=0.5, aspect= 5)
-cbar = fig.colorbar(surf, shrink=0.5, aspect=5)
+cbar = fig.colorbar(surf, shrink=0.5, aspect=10)
 
 # Define the min and max values for colorbar normalization
 z_min, z_max = np.min(grid_z), np.max(grid_z)
 
-# Normalize the color scale to the desired range
-from matplotlib.colors import Normalize
-norm = Normalize(vmin=z_min, vmax=z_max)
-
 # Update the colorbar with specific ticks: Min, Max, and some intermediate values
-cbar.set_ticks([z_max, (z_min + z_max)/7, 2*(z_min + z_max)/7, 3*(z_min + z_max)/7, 4*(z_min + z_max)/7,5*(z_min + z_max)/7, 6*(z_min + z_max)/7 ,z_min])  # Set ticks at min, middle, and max
+cbar.set_ticks([z_max-tol, (z_min + z_max)/7, 2*(z_min + z_max)/7, 3*(z_min + z_max)/7, 4*(z_min + z_max)/7, 5*(z_min + z_max)/7, 6*(z_min + z_max)/7 ,z_min+tol])
+#cbar.set_ticks([0.008])
 cbar.set_label("Displacement (Z)")
 
 # Set labels and title
