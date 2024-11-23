@@ -105,6 +105,8 @@ for elemc in tqdm(range(len(coordinations)),desc="Calculating elements"):
 
     #Det J
     det_J = (J[0,0])*(J[1,1]) - (J[0,1])*(J[1,0])
+    #if Jacob_cache == 1:
+    #    pass
     for ij in Jacob:
         J_check = apply_rip_gauss(J, 3)
         ij_check = apply_rip_gauss(ij, 3)
@@ -115,8 +117,7 @@ for elemc in tqdm(range(len(coordinations)),desc="Calculating elements"):
             Ke.append(K_e)
             Kge.append(K_eg)
             break
-    #if Jacob_cache == 1:
-    #    pass
+    
     else:
         Jacob.append(J)
 
@@ -124,7 +125,7 @@ for elemc in tqdm(range(len(coordinations)),desc="Calculating elements"):
         #J_inv = np.linalg.inv(J)
         J_inv = (1/det_J)*np.array([
             [J[1,1], -J[0,1]],
-            [-J[0,1], J[0,0]]
+            [-J[1,0], J[0,0]]
         ])
 
         #B
