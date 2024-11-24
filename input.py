@@ -1,8 +1,8 @@
 #File Name
-file_name = 'test file'
+file_name = 'test'
 
 #B.C.
-BCleft, BCright, BCtop, BCbottom = 'S', 'Sym', 'S', 'Sym'
+BCleft, BCright, BCtop, BCbottom = 'S', 'S', 'S', 'S'
 
 #volume fraction index "n"
 n = 1
@@ -27,8 +27,7 @@ K_dictionary = {
 ka = K_dictionary[n]
 
 #Distributed Load
-p0 = 1
-po = 1
+p0, po = 1, 1
 
 #Geometry
 Lx = Ly = 10
@@ -37,7 +36,7 @@ Lx = Ly = 10
 d = (E*h**3)/(12*(1-nu**2))
 
 #tolerance
-tol = 1e-4
+tol = 1e-6
 
 #Jacobian cache status
-Jacob_cache = 0
+Jacob_cache = 'ON'
