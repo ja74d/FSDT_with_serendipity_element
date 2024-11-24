@@ -140,3 +140,5 @@ Transfinite Curve {4, 1, 2, 3} = 1024 Using Progression 1;
 Transfinite Curve {4, 1, 2, 3} = 33 Using Progression 1;
 //+
 Transfinite Curve {4, 1, 2, 3} = 65 Using Progression 1;
+//+
+Transfinite Curve {4, 1, 2, 3} = 17 Using Progression 1;
